@@ -2,6 +2,12 @@
 # Sebastian Montecinos - 21.008.887-3
 # Rodrigo Erlandsen - 20.840.411-3
 # Cristián Cárdenas - 20.641.231-3
+
+#Centre los titulos en el grafico de barra y linea
+#Le cambie lo que dije por wsp, en el titulo del grafico de torta (Preguntarle al yiyo si esta bien)
+#Borre la primera linea del creaTorta() que decia t.ht(), ya que en el main se esconde la tortuga, y ahi queda escondida pra todo el programa
+#Comente algunas lineas de las funciones del grafico de lineas y barra para explicar lo que se va haciendo
+
 import turtle as t
 import sys
 
@@ -44,7 +50,9 @@ def main():
     else: ## si se salta el if y el elif anterior es porque es torta
         creaTorta(diccio_datos , opcion_color, titulo)
     
+    #Este input esta para que no se cierre la pantalla grafica una vez creado el Gráfico
     input("Presione Enter para finalizar")
+
    
 def validaDatos(): #valida el nombre del archivo, valida el formato y retorna lo que contiene el archivo en forma de diccionario
     condicion = True
@@ -171,13 +179,14 @@ def solicitaTitulo():
         
     return t
 
-####Grafico de barras####
-def grafBarra(diccio,colors,titulo):#Hay que llamar a esta funcion
+###### Grafico de Barras ######
+#Se llama a esta funcion para crear el grafico de barras
+def grafBarra(diccio,colors,titulo):
   t.up()
   t.goto(100,100)
   t.down()
-  pos = 0
-  cont = 0
+  pos = 0       #pos sirve para ir cambiando el color
+  cont = 0      #cont sirve para ajustar el tamaño del grafico de acuerdo a la cantidad de paises
   for pais in diccio:
     if(pos == len(colors)):
       pos = 0
@@ -185,6 +194,7 @@ def grafBarra(diccio,colors,titulo):#Hay que llamar a esta funcion
     pos += 1
     cont += 1
   t.up()
+  #Se crean los ejes X e Y del grafico
   t.goto(80,400)
   t.down()
   t.setheading(270)
@@ -194,12 +204,14 @@ def grafBarra(diccio,colors,titulo):#Hay que llamar a esta funcion
   t.left(90)
   t.fd(cont*65)
   t.up()
-  xtitle = (((cont-1)*65)/2)+100
+  #Con esto el titulo queda centrado siempre
+  xtitle = ((cont*65)/2)+80
   t.goto(xtitle,410)
   t.write(titulo,False,"center",font=("Verdana",13,"normal"))
-#
+
+#Crea cada barra y escribe su pais correspondiente
 def creaBarra(pais,alt,clr):
-  alt = int(alt)/2
+  alt = int(alt)/2  #La altura la divido por 2 para ajustar proporciones
   t.begin_fill()
   t.color("#"+clr)
   t.setheading(90)
@@ -226,8 +238,9 @@ def creaBarra(pais,alt,clr):
   t.pendown()
   t.end_fill()
 
-######Grafico de lineas#####
-def grafLinea(diccio,colors,titulo):#Se llama a esta funcion para crear el grafico
+###### Grafico de Lineas ######
+#Se llama a esta funcion para crear el grafico de lineas
+def grafLinea(diccio,colors,titulo):
   t.up()
   t.goto(80,100)
   t.down()
@@ -236,7 +249,7 @@ def grafLinea(diccio,colors,titulo):#Se llama a esta funcion para crear el grafi
   for pais in diccio:
     if(cont == 0):
       y = int(diccio[pais])/2
-      #Grafica del primer pais, para evitar que salga una linea del origen
+      #Grafica del primer pais, para evitar que salga una linea desde origen
       t.begin_fill()
       t.up()
       t.goto(x,y+100)
@@ -250,7 +263,7 @@ def grafLinea(diccio,colors,titulo):#Se llama a esta funcion para crear el grafi
       t.color("#"+colors[0])
       t.circle(4)
       t.end_fill()
-      #Escribe pais 1
+      #Escribe primer Pais
       t.up()
       t.color("black")
       t.goto(x,80)
@@ -261,6 +274,7 @@ def grafLinea(diccio,colors,titulo):#Se llama a esta funcion para crear el grafi
     x += 60
     cont += 1
   t.up()
+  #Se crean los ejes X e Y del grafico
   t.goto(90,400)
   t.down()
   t.setheading(270)
@@ -270,10 +284,11 @@ def grafLinea(diccio,colors,titulo):#Se llama a esta funcion para crear el grafi
   t.left(90)
   t.fd(cont*65)
   t.up()
-  xtitle = (((cont-1)*65)/2)+105 #titulo
+  #Con esto el titulo queda centrado siempre
+  xtitle = ((cont*65)/2)+90
   t.goto(xtitle,410)
   t.write(titulo,False,"center",font=("Verdana",13,"normal"))
-#
+
 def creaLinea(pais,alt,clr,x):
   #la esquina inferior izquierda es 0,0
   alt = int(alt)/2
@@ -284,7 +299,7 @@ def creaLinea(pais,alt,clr,x):
   t.goto(x,alt+100)
   t.circle(4)
   t.end_fill()
-  #escribe el valor
+  #Escribe el valor
   t.up()
   t.goto(x,alt+80)
   t.down()
@@ -292,15 +307,16 @@ def creaLinea(pais,alt,clr,x):
   t.write(int(alt*2),False,"center")
   t.up()
   t.goto(x,alt + 100)
-  #escribe pais
+  #Escribe pais
   t.up()
   t.goto(x,80)
   t.write(pais,False,"center")
   t.goto(x,alt+100)
 
+###### Grafico de Torta ######
+#Se llama a esta funcion para crear el grafico de torta
 def creaTorta(diccio, colorsR,titulo):
-    t.ht()#Con esto se esconde la tortuga
-    radius = 200 ## circumference of a circle = 2pi*r
+    radius = 200
     t.up()
     t.forward(radius)
     t.down()
@@ -310,8 +326,8 @@ def creaTorta(diccio, colorsR,titulo):
     t.forward(radius)
     divideTorta(diccio ,colorsR)
     colocaNombresTorta(diccio)
-    xtitle = (((3)*65)/2)+105 #titulo
-    t.goto(xtitle,410)
+    #titulo
+    t.goto(200,410)
     t.write(titulo,False,"center",font=("Verdana",13,"normal"))
 
 def divideTorta(diccio,colorsR):
@@ -364,40 +380,5 @@ def colocaNombresTorta(diccio):
         t.forward(-40)
         t.setheading(perc-(porciento/2))
         t.forward(-radius/1.5)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        
 main()
