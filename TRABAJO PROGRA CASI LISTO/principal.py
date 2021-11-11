@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Nov 11 16:24:18 2021
+
+@author: crist
+"""
+
 # Felipe Córdova - 20.960.184-2
 # Sebastian Montecinos - 21.008.887-3
 # Rodrigo Erlandsen - 20.840.411-3
@@ -55,10 +62,14 @@ def main():
 
    
 def validaDatos(): #valida el nombre del archivo, valida el formato y retorna lo que contiene el archivo en forma de diccionario
+    finaliza = False # da la posibilidad de salir del programa
     condicion = True
     while(condicion):
         try:
-            nom = input("Ingrese nombre completo del archivo: ").strip()
+            nom = input("Ingrese nombre completo del archivo: ")
+            if(finaliza and nom == ""): # finaliza el programa
+                sys.exit()
+            nom = nom.strip()
             lineasDatos = {} #diccionario
             if (nom == ""):
                 raise nadaOespacios
@@ -77,18 +88,26 @@ def validaDatos(): #valida el nombre del archivo, valida el formato y retorna lo
                     condicion = False
         except(FileNotFoundError):
             print("   No existe un archivo con ese nombre, inténtelo nuevamente")
+            print("   Ingrese un nuevo nombre o presione ENTER para abandonar el programa.")
+            finaliza = True
         except(ValueError,Invalido):
             print("   El archivo no tiene el formato requerido, inténtelo nuevamente")
+            print("   Ingrese un nuevo nombre o presione ENTER para abandonar el programa.")
+            finaliza = True
         except(nadaOespacios):
             print("   Nada ingresó, intentélo nuevamente")
     return lineasDatos
 
 
 def validaColor(): ##valida el nombre del archivo para los colores, valida el formato y retorna lo que contiene el archivo en forma de diccionario
+    finaliza = False
     condicion = True
     while(condicion):
         try:
-            nom = input("Ingrese nombre del archivo de colores: ").strip()
+            nom = input("Ingrese nombre del archivo de colores: ")
+            if(finaliza and nom == ""): # finaliza el programa
+                sys.exit()
+            nom = nom.strip()
             cont = 0
             diccio = {}
             if (len(nom) == 0):
@@ -118,8 +137,12 @@ def validaColor(): ##valida el nombre del archivo para los colores, valida el fo
                     condicion = False
         except(FileNotFoundError):
             print("   No existe un archivo con ese nombre, inténtelo nuevamente")
+            print("   Ingrese un nuevo nombre o presione ENTER para abandonar el programa.")
+            finaliza = True
         except(ValueError, Invalido):
             print("   El archivo no tiene el formato requerido, inténtelo nuevamente")
+            print("   Ingrese un nuevo nombre o presione ENTER para abandonar el programa.")
+            finaliza = True
         except(nadaOespacios):
             print("   Nada ingresó, intentélo nuevamente")
             
@@ -136,10 +159,7 @@ def solicitaTipoGrafico():
     condicion = True
     while(condicion):
         try:
-            opcion = input("Ingrese opción: ").strip()
-            if(opcion == ""): # PREGUNTAR POR ESTO
-                sys.exit()
-            opcion = int(opcion)
+            opcion = int(input("Ingrese opción: ").strip())
             if(opcion < 1 or opcion > len(tipo_grafico)):
                 raise OpcionInvalidaError
             condicion = False
@@ -159,10 +179,7 @@ def solicitaPaletaColores(colores):
     condicion = True
     while(condicion):
         try:
-            opcion = input("Ingrese opción: ").strip()
-            if(opcion == ""): # PREGUNTAR X2
-                sys.exit()
-            opcion = int(opcion)
+            opcion = int(input("Ingrese opción: ").strip())
             if(opcion < 1 or opcion > len(colores_lista)):
                 raise OpcionInvalidaError
             condicion = False
