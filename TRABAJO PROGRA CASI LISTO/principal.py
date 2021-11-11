@@ -18,6 +18,7 @@ Created on Thu Nov 11 16:24:18 2021
 import turtle as t
 import sys
 
+
 # Errores posibles
 class Errores(Exception):
     pass
@@ -34,123 +35,167 @@ class nadaOespacios (Errores):
 class Invalido (Errores):
     pass
 
-# función main() que organiza el flujo principal del programa
+
 def main():
+    """ Organiza el flujo principal del programa"""
+    
+    # Recoleccion y validacion de datos importados desde archivos externos
     diccio_datos = validaDatos()
     diccio_color = validaColor()
+    
+    # Recoleccion y validacion de la configuracion del grafico
     paleta_colores = solicitaPaletaColores(diccio_color)
     tipo_grafico = solicitaTipoGrafico()
     titulo = solicitaTitulo()
-    print("Generando gráfico...")
-    opcion_color = diccio_color[paleta_colores]
+    
 
-    #pantalla gráfica
+    # Generacion del grafico
     t.setup(750,500,50,50)
     t.setworldcoordinates(0,0,750,500)
     t.speed("fast")
-    t.ht()#Con esto se esconde la tortuga
+    t.ht() #Con esto se esconde la tortuga
+    
+    opcion_color = diccio_color[paleta_colores]
+    print("Generando gráfico...")
     
     if(tipo_grafico == "barras"):
         grafBarra(diccio_datos , opcion_color , titulo)
+        
     elif(tipo_grafico == "línea"):
         grafLinea(diccio_datos , opcion_color , titulo)
-    else: ## si se salta el if y el elif anterior es porque es torta
+        
+    else: # Grafico de torta, por descarte
         creaTorta(diccio_datos , opcion_color, titulo)
     
     #Este input esta para que no se cierre la pantalla grafica una vez creado el Gráfico
     input("Presione Enter para finalizar")
 
    
-def validaDatos(): #valida el nombre del archivo, valida el formato y retorna lo que contiene el archivo en forma de diccionario
+def validaDatos(): 
+    """
+    Valida el nombre del archivo, valida el formato y retorna el contenido 
+    del archivo en un diccionario
+    """
+    
     finaliza = False # da la posibilidad de salir del programa
-    condicion = True
+    condicion = True 
     while(condicion):
         try:
             nom = input("Ingrese nombre completo del archivo: ")
+            
             if(finaliza and nom == ""): # finaliza el programa
                 sys.exit()
+                
             nom = nom.strip()
-            lineasDatos = {} #diccionario
+            lineasDatos = {} # Contenedor de informacion
+            
             if (nom == ""):
                 raise nadaOespacios
-            else:
-                with open(nom) as archivo:
-                    for fila in archivo:
-                        fila = fila.strip("\n") 
-                        #x = fila.count(',') # tal vez sea innecesario
-                        y = fila.split(',')
-                        if(len(y) != 2):
-                            raise Invalido
-                        #elif(x != 1): # Nunca pasara por aqui
-                            #raise Invalido
-                        #int(y[1]) # esto aparece abajo, lanzará el ValueError igual
-                        lineasDatos[y[0]] = int(y[1])
-                    condicion = False
+                
+            with open(nom) as archivo:
+                for fila in archivo:
+                    fila = fila.strip("\n") 
+                    y = fila.split(',')
+                    
+                    if(len(y) != 2): # formato requerido de dos columnas
+                        raise Invalido
+                        
+                    lineasDatos[y[0]] = int(y[1]) # formato de entero para el segundo elemento
+                        
+                condicion = False # el archivo es valido
+                    
         except(FileNotFoundError):
             print("   No existe un archivo con ese nombre, inténtelo nuevamente")
             print("   Ingrese un nuevo nombre o presione ENTER para abandonar el programa.")
             finaliza = True
+            
         except(ValueError,Invalido):
             print("   El archivo no tiene el formato requerido, inténtelo nuevamente")
             print("   Ingrese un nuevo nombre o presione ENTER para abandonar el programa.")
             finaliza = True
+            
         except(nadaOespacios):
             print("   Nada ingresó, intentélo nuevamente")
+            
     return lineasDatos
 
 
-def validaColor(): ##valida el nombre del archivo para los colores, valida el formato y retorna lo que contiene el archivo en forma de diccionario
-    finaliza = False
+
+def validaColor(): 
+    """
+    valida el nombre del archivo para los colores, valida el formato y retorna 
+    lo que contiene el archivo en un diccionario
+    """
+    
+    finaliza = False # da la posibilidad de salir del programa
     condicion = True
+    
     while(condicion):
         try:
             nom = input("Ingrese nombre del archivo de colores: ")
+            
             if(finaliza and nom == ""): # finaliza el programa
                 sys.exit()
+                
             nom = nom.strip()
-            cont = 0
+            cont = 0 # identificador de fila (par o impar)
             diccio = {}
+            
             if (len(nom) == 0):
                 raise nadaOespacios
-            else:
-                with open(nom) as archivo:
-                    temp = archivo.readlines()
-                    if(len(temp)%2 != 0): # validacion el número de filas es par
-                        raise Invalido
-                    for fila in temp:
-                        fila = fila.strip("\n")
-                        if(cont == 0):
-                            if (fila[0] != '>'): 
+                
+            with open(nom) as archivo:
+                lineas = archivo.readlines()
+                
+                if(len(lineas)%2 != 0): # validacion el número de filas es par
+                    raise Invalido
+                    
+                # validacion del formato fila por fila
+                for fila in lineas:
+                    fila = fila.strip("\n")
+                    
+                    if(cont == 0): # validacion forma: >nombre
+                        if (fila[0] != '>'): 
+                            raise Invalido
+                            
+                        y = fila 
+                        cont = 1
+                        
+                    elif(cont == 1): # validacion forma: hex1,hex2,hex3...
+                        x = fila.split(',')
+                        for i in range(0,len(x)):
+                            if(len(x[i]) != 6): # validacion rango: 000000 - FFFFFF
                                 raise Invalido
-                            y = fila 
-                            #diccio[y.lstrip('>')] = "" # esto se hace en el elif
-                            cont = 1
-                        elif(cont == 1):
-                            x = fila.split(',')
-                            for i in range(0,len(x)):
-                                if(len(x[i]) != 6):
-                                    raise Invalido
-                                num = int(str(x[i]), 16)
-                                #hex(num) # con la linea anterior ya queda claro que es hexadecimal
-                            diccio[y.lstrip('>')] = tuple(x)
-                            cont = 0
+                            num = int(str(x[i]), 16) # validacion: hexadecimal
+                            
+                        diccio[y.lstrip('>')] = tuple(x)
+                        cont = 0
+                        
                     condicion = False
+                    
         except(FileNotFoundError):
             print("   No existe un archivo con ese nombre, inténtelo nuevamente")
             print("   Ingrese un nuevo nombre o presione ENTER para abandonar el programa.")
             finaliza = True
+            
         except(ValueError, Invalido):
             print("   El archivo no tiene el formato requerido, inténtelo nuevamente")
             print("   Ingrese un nuevo nombre o presione ENTER para abandonar el programa.")
             finaliza = True
+            
         except(nadaOespacios):
             print("   Nada ingresó, intentélo nuevamente")
             
     return diccio
+
+
+
 ################################################################################################################
 
+
+
 def solicitaTipoGrafico():
-    tipo_grafico = ["barras", "torta", "línea"]
+    tipo_grafico = ["barras", "torta", "línea"] # graficos disponibles
     print("\nSelecciona el tipo de gráfico:")
     # Enumerate: enumera cada elemento del iterador, funciona como contador
     for i, tipo in enumerate(tipo_grafico):
@@ -168,6 +213,7 @@ def solicitaTipoGrafico():
             print("Opción no disponible")
     
     return tipo_grafico[opcion-1]
+
 
 
 def solicitaPaletaColores(colores):
@@ -188,6 +234,8 @@ def solicitaPaletaColores(colores):
             print("Opción no disponible")
     
     return colores_lista[opcion-1]
+
+
 
 def solicitaTitulo():
     t = input("Ingrese un título para el gráfico: ").strip()
