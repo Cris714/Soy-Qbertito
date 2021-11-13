@@ -75,9 +75,7 @@ def validaDatos():
     condicion = True 
     while(condicion):
         try:
-            #nom = input("Ingrese nombre completo del archivo: ")
-            nom = "C:/Users/crist/Desktop/INFO/Programacion/tarea/empresas_seguridad.csv"
-            
+            nom = input("Ingrese nombre completo del archivo: ")
             
             if(finaliza and nom == ""): # finaliza el programa
                 sys.exit()
@@ -129,8 +127,7 @@ def validaColor():
     
     while(condicion):
         try:
-            #nom = input("Ingrese nombre del archivo de colores: ")
-            nom = "C:/Users/crist/Desktop/INFO/Programacion/tarea/colores.csv"
+            nom = input("Ingrese nombre del archivo de colores: ")
             
             if(finaliza and nom == ""): # finaliza el programa
                 sys.exit()
