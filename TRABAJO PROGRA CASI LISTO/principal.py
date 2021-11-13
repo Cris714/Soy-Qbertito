@@ -26,9 +26,6 @@ class Errores(Exception):
 class FormatoIncorrectoError(Errores):
     pass
 
-class OpcionInvalidaError(Errores):
-    pass
-
 class nadaOespacios (Errores):
     pass
 
@@ -66,9 +63,6 @@ def main():
         
     else: # Grafico de torta, por descarte
         creaTorta(diccio_datos , opcion_color, titulo)
-    
-    #Este input esta para que no se cierre la pantalla grafica una vez creado el Gráfico
-    input("Presione Enter para finalizar")
 
    
 def validaDatos(): 
@@ -81,7 +75,9 @@ def validaDatos():
     condicion = True 
     while(condicion):
         try:
-            nom = input("Ingrese nombre completo del archivo: ")
+            #nom = input("Ingrese nombre completo del archivo: ")
+            nom = "C:/Users/crist/Desktop/INFO/Programacion/tarea/empresas_seguridad.csv"
+            
             
             if(finaliza and nom == ""): # finaliza el programa
                 sys.exit()
@@ -97,9 +93,10 @@ def validaDatos():
                     fila = fila.strip("\n") 
                     y = fila.split(',')
                     
-                    if(len(y) != 2): # formato requerido de dos columnas
+                    # formato requerido de dos columnas y columna 2 de numeros positivos
+                    if(len(y) != 2 or int(y[1]) <= 0): # la segunda condicion se lee SOLO si la primera es falsa
                         raise Invalido
-                        
+                    
                     lineasDatos[y[0]] = int(y[1]) # formato de entero para el segundo elemento
                         
                 condicion = False # el archivo es valido
@@ -132,7 +129,8 @@ def validaColor():
     
     while(condicion):
         try:
-            nom = input("Ingrese nombre del archivo de colores: ")
+            #nom = input("Ingrese nombre del archivo de colores: ")
+            nom = "C:/Users/crist/Desktop/INFO/Programacion/tarea/colores.csv"
             
             if(finaliza and nom == ""): # finaliza el programa
                 sys.exit()
@@ -206,7 +204,7 @@ def solicitaTipoGrafico():
         try:
             opcion = int(input("Ingrese opción: ").strip())
             if(opcion < 1 or opcion > len(tipo_grafico)):
-                raise OpcionInvalidaError
+                raise Invalido
             condicion = False
             
         except:
@@ -227,10 +225,10 @@ def solicitaPaletaColores(colores):
         try:
             opcion = int(input("Ingrese opción: ").strip())
             if(opcion < 1 or opcion > len(colores_lista)):
-                raise OpcionInvalidaError
+                raise Invalido
             condicion = False
             
-        except (OpcionInvalidaError, ValueError):
+        except (Invalido, ValueError):
             print("Opción no disponible")
     
     return colores_lista[opcion-1]
@@ -244,7 +242,10 @@ def solicitaTitulo():
         
     return t
 
+
+
 ###### Grafico de Barras ######
+
 #Se llama a esta funcion para crear el grafico de barras
 def grafBarra(diccio,colors,titulo):
   t.up()
@@ -273,26 +274,30 @@ def grafBarra(diccio,colors,titulo):
   xtitle = ((cont*65)/2)+80
   t.goto(xtitle,410)
   t.write(titulo,False,"center",font=("Verdana",13,"normal"))
+  t.done()
 
 #Crea cada barra y escribe su pais correspondiente
 def creaBarra(pais,alt,clr):
   alt = int(alt)/2  #La altura la divido por 2 para ajustar proporciones
   t.begin_fill()
   t.color("#"+clr)
-  t.setheading(90)
   #Escribe nombre del pais
   t.up()
-  t.bk(20)
+  t.setheading(-45)
+  t.fd(2**(1/2)*20) # avanza el equivalente a una diagonal de cuadrado 20x20
   t.color("black")
-  t.write(pais)
+  t.write(pais, align="center")
   t.color("#"+clr)
-  t.fd(20)
+  t.bk(2**(1/2)*20)
+  t.setheading(90)
   t.down()
   #Crea barra
   t.fd(alt)
   t.right(90)
   t.color("black")
-  t.write(int(alt)*2,False)
+  t.fd(20)
+  t.write(int(alt)*2,False, align="center")
+  t.bk(20)
   t.color("#"+clr)
   t.fd(40)
   t.right(90)
@@ -310,20 +315,20 @@ def grafLinea(diccio,colors,titulo):
   t.goto(80,100)
   t.down()
   cont = 0
-  x = 120
+  x = 150
   for pais in diccio:
     if(cont == 0):
       y = int(diccio[pais])/2
       #Grafica del primer pais, para evitar que salga una linea desde origen
       t.begin_fill()
       t.up()
-      t.goto(x,y+100)
+      t.goto(x,y+110)
       t.color("black")
       #Escribe el valor y el circulo
       t.up()
       t.goto(x,y+80)
-      t.write(diccio[pais],False,"center")
-      t.goto(x,y+100)
+      t.write(diccio[pais],False,"center", font=("verdana", 11))
+      t.goto(x,y+110)
       t.down()
       t.color("#"+colors[0])
       t.circle(4)
@@ -331,12 +336,12 @@ def grafLinea(diccio,colors,titulo):
       #Escribe primer Pais
       t.up()
       t.color("black")
-      t.goto(x,80)
-      t.write(pais,False,"center")
-      t.goto(x,y+100)
+      t.goto(x,70)
+      t.write(pais,False,"center", font=("verdana", 11))
+      t.goto(x,y+110)
     else:
       creaLinea(pais,diccio[pais],colors[0],x)
-    x += 60
+    x += 100
     cont += 1
   t.up()
   #Se crean los ejes X e Y del grafico
@@ -344,15 +349,16 @@ def grafLinea(diccio,colors,titulo):
   t.down()
   t.setheading(270)
   t.color("black")
-  t.write("600",False,"center")
+  t.write("600",False,"center", font=("verdana", 11))
   t.fd(300)
   t.left(90)
-  t.fd(cont*65)
+  t.fd(cont*105)
   t.up()
   #Con esto el titulo queda centrado siempre
-  xtitle = ((cont*65)/2)+90
-  t.goto(xtitle,410)
-  t.write(titulo,False,"center",font=("Verdana",13,"normal"))
+  xtitle = ((cont*105)/2)+90
+  t.goto(xtitle,450)
+  t.write(titulo,False,"center",font=("Verdana",14,"normal"))
+  t.done()
 
 def creaLinea(pais,alt,clr,x):
   #la esquina inferior izquierda es 0,0
@@ -361,7 +367,7 @@ def creaLinea(pais,alt,clr,x):
   t.begin_fill()
   t.color("#"+clr)
   #Crea linea y circulito
-  t.goto(x,alt+100)
+  t.goto(x,alt+110)
   t.circle(4)
   t.end_fill()
   #Escribe el valor
@@ -369,14 +375,14 @@ def creaLinea(pais,alt,clr,x):
   t.goto(x,alt+80)
   t.down()
   t.color("black")
-  t.write(int(alt*2),False,"center")
+  t.write(int(alt*2),False,"center", font=("verdana", 11))
   t.up()
-  t.goto(x,alt + 100)
+  t.goto(x,alt + 110)
   #Escribe pais
   t.up()
-  t.goto(x,80)
-  t.write(pais,False,"center")
-  t.goto(x,alt+100)
+  t.goto(x,70)
+  t.write(pais,False,"center", font=("verdana", 11))
+  t.goto(x,alt+110)
 
 ###### Grafico de Torta ######
 #Se llama a esta funcion para crear el grafico de torta
@@ -393,7 +399,8 @@ def creaTorta(diccio, colorsR,titulo):
     colocaNombresTorta(diccio)
     #titulo
     t.goto(200,410)
-    t.write(titulo,False,"center",font=("Verdana",13,"normal"))
+    t.write(titulo,False,"center",font=("Verdana", 14,"normal"))
+    t.done()
 
 def divideTorta(diccio,colorsR):
     perc = 0
@@ -438,12 +445,21 @@ def colocaNombresTorta(diccio):
         t.color("black")
         t.setheading(perc-(porciento/2))
         t.forward(radius/1.5)
-        t.write(percent, align="center", font=("arial", 15, "normal"))
-        t.setheading(-40)
-        t.forward(40)
-        t.write(str(round(x,1))+"%", align="center", font=("arial", 18, "normal"))
-        t.forward(-40)
+        t.write(percent, align="center", font=("arial", 14, "normal"))
+        t.setheading(-90)
+        t.forward(25)
+        t.write(str(round(x,1))+"%", align="center", font=("arial", 14, "normal"))
+        t.forward(-25)
         t.setheading(perc-(porciento/2))
         t.forward(-radius/1.5)
+
+def colocaNombresTortad(diccio):
+    radio = 200
+    total = sum(list(diccio.values()))
+    t.goto(radio, radio)
+    for key, val in diccio.items():
+        grad = val * 360 / 100
+        t.write(key, font=("arial", 14))
+
         
 main()
